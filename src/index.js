@@ -63,6 +63,18 @@ app.put('/talker/:id',
   res.status(200).json(update);
 });
 
+// DELETE
+app.delete('/talker/:id',
+  validaToken,
+  (req, res) => {
+  const id = Number(req.params.id);
+  const talkers = JSON.parse(fs.readFileSync(talker));
+
+  const newArr = talkers.filter((e) => e.id !== id);
+  fs.writeFileSync(talker, JSON.stringify(newArr));
+  res.status(204).json();
+});
+
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
 
