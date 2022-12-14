@@ -1,6 +1,10 @@
 const express = require('express');
 const fs = require('fs');
 const { geraToken, validaPassword, validaEmail } = require('../middlewares/login');
+const { validaToken } = require('../middlewares/validaToken');
+const { validaName } = require('../middlewares/validaName');
+const { validaAge } = require('../middlewares/validaAge');
+const { validaTalk } = require('../middlewares/validaTalker');
 
 const app = express();
 app.use(express.json());
@@ -23,6 +27,20 @@ app.get('/talker/:id', async (req, res) => {
 
 // POST
 app.post('/login', validaEmail, validaPassword, geraToken);
+
+// POST
+app.post('/talker',
+  validaToken, validaName, validaAge, validaTalk,
+  (req, res) => {
+  const { name, age, talk } = req.body;
+  const talkers = JSON.parse(fs.readFileSync('src/talker.json'));
+
+  const addTalker = { id: talkers.length + 1, name, age, talk };
+
+  talkers.push(addTalker);
+  fs.writeFileSync('src/talker.json', JSON.stringify(talkers));
+  res.status(201).json(addTalker);
+});
 
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
